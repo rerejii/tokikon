@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "444447735924",
+    "firebase_url": "https://tokikon-d85d2.firebaseio.com",
+    "project_id": "tokikon-d85d2",
+    "storage_bucket": "tokikon-d85d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444447735924:android:2893cd3640b8bd5e",
+        "android_client_info": {
+          "package_name": "jp.ac.kochi_tech.info.krlab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "444447735924-mn3e1ufbdfq5p2i961odhpghi6vogqcq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "jp.ac.kochi_tech.info.krlab",
+            "certificate_hash": "a0cc7b6385afe4f9f613bf6687e8be4ffb81e2bb"
+          }
+        },
+        {
+          "client_id": "444447735924-11v92an6lr4veml14naka1mpbqb4rd6h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgwnAUliGV3AYqq2kT4LldlhvR-XjDuE8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "444447735924-11v92an6lr4veml14naka1mpbqb4rd6h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
