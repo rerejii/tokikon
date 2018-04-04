@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity  {
     private LineChart mChart;
     private long startTime;
     private boolean buttonInput;
-    private Button sendButton;
+    private Button fightButton;
     private SharedPreferences dataStore;
     private DataBaseHelper dbHelper;
     private SQLiteDatabase db;
@@ -53,18 +53,15 @@ public class MainActivity extends AppCompatActivity  {
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
                         setContentView(R.layout.activity_main);
-                        mTextMessage = (TextView) findViewById(R.id.message);
-                        mTextMessage.setText(R.string.title_home);
                         navigation = (BottomNavigationView) findViewById(R.id.navigation);
                         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+                        onCreateHome();
                         InitialOperation = false;
                         navigation.setSelectedItemId(R.id.navigation_home);
                         InitialOperation = true;
                         return true;
                     case R.id.navigation_dashboard:
                         setContentView(R.layout.activity_day);
-                        mTextMessage = (TextView) findViewById(R.id.message2);
-                        mTextMessage.setText(R.string.title_dashboard);
                         navigation = (BottomNavigationView) findViewById(R.id.navigation2);
                         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
                         InitialOperation = false;
@@ -72,8 +69,9 @@ public class MainActivity extends AppCompatActivity  {
                         InitialOperation = true;
                         return true;
                     case R.id.navigation_notifications:
-                        mTextMessage.setText(R.string.title_notifications);
-                        return true;
+                        InitialOperation = false;
+                        navigation.setSelectedItemId(R.id.navigation_notifications);
+                        InitialOperation = true;
                 }
                 return false;
             }
@@ -81,36 +79,38 @@ public class MainActivity extends AppCompatActivity  {
         }
     };
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        dataStore = getSharedPreferences("DataStore", MODE_PRIVATE);// "DataStore"という名前でインスタンスを生成
+        dbHelper = new DataBaseHelper(this);
+        db =  dbHelper.getWritableDatabase();
+        dbHelper.getWritableDatabase();
+        onCreateHome();
 
-        // "DataStore"という名前でインスタンスを生成
-        dataStore = getSharedPreferences("DataStore", MODE_PRIVATE);
+    }
+
+    private void onCreateHome() {
+        timerText = (TextView) findViewById(R.id.now_time);
+        totalText = (TextView) findViewById(R.id.total_time);
+        fightButton = findViewById(R.id.fight_button);
 
         InitialOperation = true;
         buttonInput = true;
-        mTextMessage = (TextView) findViewById(R.id.message);
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        //初期値
-        timerText = (TextView) findViewById(R.id.now_time);
-        totalText = (TextView) findViewById(R.id.total_time);
         timerText.setText(dataFormat.format(0));
-        sendButton = findViewById(R.id.fight_button);
-        //作ったクラスのインスタンスを作成して
-        dbHelper = new DataBaseHelper(this);
-        db =  dbHelper.getWritableDatabase();
-        //書き込み可能でデータベースを開く
-        //(ここでDBファイルがなかったら作成する(onCreate)
-        dbHelper.getWritableDatabase();
+        totalText.setText(dataFormat.format(0));
 
         updateTime = new Runnable() {
             public void run() {
-                //TextView text = (TextView) findViewById(R.id.now_time);
-                timeTextCountUp(startTime);
+                long endTime = System.currentTimeMillis();
+                // カウント時間 = 経過時間 - 開始時間
+                long diffTime = (endTime - startTime);
+                long ToDayTime = dataStore.getLong("ToDayTime", 0);
+                timerText.setText(dataFormat.format(diffTime));
+                totalText.setText(dataFormat.format(diffTime+ToDayTime));
                 mHandler.removeCallbacks(updateTime);
                 //mHandler.post(updateTime);
                 mHandler.postDelayed(updateTime, 1000);
@@ -147,11 +147,9 @@ public class MainActivity extends AppCompatActivity  {
                     editor.putLong("year", year);
                     editor.putLong("mouth", mouth);
                     editor.putLong("day", day);
+                    editor.putLong("ToDayTime", 0);
                     editor.apply();
-
-
                     mHandler.removeCallbacks(checkDay);
-                    //mHandler.post(updateTime);
                     mHandler.postDelayed(checkDay, 1000);
 
                 }
@@ -162,11 +160,11 @@ public class MainActivity extends AppCompatActivity  {
         if(startTime != 0){
             mHandler.post(updateTime);
             //mHandler.postDelayed(updateTime, 1000);
-            sendButton.setBackground(getResources().getDrawable(R.drawable.try_now_button));
+            fightButton.setBackground(getResources().getDrawable(R.drawable.try_now_button));
             buttonInput = false;
         }
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        fightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (buttonInput) {
@@ -176,7 +174,7 @@ public class MainActivity extends AppCompatActivity  {
                     editor.putLong("startTime", startTime);
                     editor.apply();
                     mHandler.postDelayed(updateTime, 1000);
-                    sendButton.setBackground(getResources().getDrawable(R.drawable.try_now_button));
+                    fightButton.setBackground(getResources().getDrawable(R.drawable.try_now_button));
                     buttonInput = false;
                 }else{
                     mHandler.removeCallbacks(updateTime);
@@ -189,20 +187,15 @@ public class MainActivity extends AppCompatActivity  {
                     editor.putLong("ToDayTime", ToDayTime + diffTime);
                     editor.remove("startTime");
                     editor.apply();
-                    sendButton.setBackground(getResources().getDrawable(R.drawable.try_button));
+                    fightButton.setBackground(getResources().getDrawable(R.drawable.try_button));
                     buttonInput = true;
                 }
             }
         });
     }
 
-    public void timeTextCountUp(long sTime){
-        long endTime = System.currentTimeMillis();
-        // カウント時間 = 経過時間 - 開始時間
-        long diffTime = (endTime - sTime);
-        long ToDayTime = dataStore.getLong("ToDayTime", 0);
-        timerText.setText(dataFormat.format(diffTime));
-        totalText.setText(dataFormat.format(diffTime+ToDayTime));
+    private void onCreateGraph() {
+
     }
 
 }
