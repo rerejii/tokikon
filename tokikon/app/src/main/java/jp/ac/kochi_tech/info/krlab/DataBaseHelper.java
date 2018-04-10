@@ -15,13 +15,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-//データベース定義
-        String DB_ITEM = "Create table DAY_DATA ("
-                + "id integer primary key"
-                + ",year integer not null"
-                + ",mouth integer not null"
-                + ",day integer not null"
-                + ",time integer not null)";
+        String DB_ITEM = "CREATE TABLE day_time ("
+                + "id INTEGER PRIMARY KEY"
+                + ",year INTEGER NOT NULL"
+                + ",mouth INTEGER NOT NULL"
+                + ",day INTEGER NOT NULL"
+                + ",time INTEGER NOT NULL);"
+                ;
+
+//Create文を実行
+        db.execSQL(DB_ITEM);
+    }
+
+    public void onReset(SQLiteDatabase db) {
+        String DB_ITEM = "CREATE TABLE day_time ("
+                + "id INTEGER PRIMARY KEY"
+                + ",year INTEGER NOT NULL"
+                + ",mouth INTEGER NOT NULL"
+                + ",day INTEGER NOT NULL"
+                + ",time INTEGER NOT NULL);"
+                ;
 
 //Create文を実行
         db.execSQL(DB_ITEM);
